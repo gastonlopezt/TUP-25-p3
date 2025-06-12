@@ -1,37 +1,75 @@
-# Configuración de IDEs
+# -----------------------------
+# IDEs y editores
+# -----------------------------
+# Visual Studio
 .vs/
-.vscode/
-*.user
 *.suo
+*.user
+
+# VS Code
+.vscode/
+
+# Code Runner (extensiones temporales)
 **/tempCodeRunnerFile.cs
 tempCodeRunnerFile.csharp
 
-# Archivos generados por compilación
+# -----------------------------
+# Salidas de compilación
+# -----------------------------
+# Binarios y objetos
 **/bin/
 **/obj/
-datos/obj/
 
-# Archivos del sistema operativo
+# Publicaciones y despliegues
+**/publish/
+**/node_modules/
+
+# -----------------------------
+# Sistema operativo
+# -----------------------------
+# macOS
 **/.DS_Store
-Enunciados/.DS_Store
+
+# Windows
 Thumbs.db
 
-# Archivos temporales y carpetas auxiliares del proyecto
-/clases/tmp/
-datos/asistencias/tmp/
+# -----------------------------
+# Archivos temporales y caches
+# -----------------------------
+# Carpetas temporales del proyecto
+**/tmp/
+
+# Nombres genéricos
+*.tmp
+*.log
+
+# Fechas y soluciones intermedias
 fechas/
 /datos/Soluciones/
 
-# Archivos específicos del proyecto
-examen/respuestas-examen.md
+# -----------------------------
+# Contenido web estático
+# -----------------------------
+# Ignorar librerías bajo wwwroot/lib
+**/wwwroot/lib/**
 
-# Archivos de bases de datos SQLite
+
+# -----------------------------
+# Bases de datos locales
+# -----------------------------
 *.db-shm
 *.db-wal
 
-# Archivos de configuración sensibles
+# -----------------------------
+# Archivos específicos del proyecto
+# -----------------------------
+# Enunciados y exámenes
+examen/respuestas-examen.md
+
+# Configuración sensible
 github-config.json
 *.secret.json
 
-# Otros
+# Archivos falsos de prueba
 .fake
+*/node_modules

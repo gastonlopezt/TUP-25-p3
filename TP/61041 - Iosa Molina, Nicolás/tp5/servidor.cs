@@ -43,23 +43,24 @@ app.MapPut("/productos", async (AppDb db, Producto p) =>
     return Results.Ok(prod);
 });
 
-var db = scope.ServiceProvider.GetRequiredService<AppDb>();
-db.Database.EnsureCreated();
-if (!db.Productos.Any())
-{
-    db.Productos.AddRange(
-        new Producto { Nombre = "Lapicera", Precio = 100, Stock = 10 },
-        new Producto { Nombre = "Cuaderno", Precio = 250, Stock = 15 },
-        new Producto { Nombre = "Regla", Precio = 80, Stock = 20 },
-        new Producto { Nombre = "Goma", Precio = 50, Stock = 30 },
-        new Producto { Nombre = "Cartuchera", Precio = 400, Stock = 5 },
-        new Producto { Nombre = "Mochila", Precio = 2000, Stock = 3 },
-        new Producto { Nombre = "Compás", Precio = 300, Stock = 8 },
-        new Producto { Nombre = "Tijera", Precio = 120, Stock = 12 },
-        new Producto { Nombre = "Pegamento", Precio = 90, Stock = 25 },
-        new Producto { Nombre = "Marcador", Precio = 60, Stock = 18 }
-    );
-    db.SaveChanges();
+using (var scope = app.Services.CreateScope()) {
+    var db = scope.ServiceProvider.GetRequiredService<AppDb>();
+    db.Database.EnsureCreated();
+    if (!db.Productos.Any()) {
+        db.Productos.AddRange(
+            new Producto { Nombre = "Lapicera",   Precio =  100, Stock = 10 },
+            new Producto { Nombre = "Cuaderno",   Precio =  250, Stock = 15 },
+            new Producto { Nombre = "Regla",      Precio =   80, Stock = 20 },
+            new Producto { Nombre = "Goma",       Precio =   50, Stock = 30 },
+            new Producto { Nombre = "Cartuchera", Precio =  400, Stock =  5 },
+            new Producto { Nombre = "Mochila",    Precio = 2000, Stock =  3 },
+            new Producto { Nombre = "Compás",     Precio =  300, Stock =  8 },
+            new Producto { Nombre = "Tijera",     Precio =  120, Stock = 12 },
+            new Producto { Nombre = "Pegamento",  Precio =   90, Stock = 25 },
+            new Producto { Nombre = "Marcador",   Precio =   60, Stock = 18 }
+        );
+        db.SaveChanges();
+    }
 }
 
 
