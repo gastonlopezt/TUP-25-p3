@@ -142,6 +142,19 @@ app.MapGet("/compras", async (TiendaDbContext db) =>
     return Results.Ok(compras);
 });
 
+app.MapGet("/compras/{id:int}", async (int id, TiendaDbContext db) =>
+{
+    var compra = await db.Compras
+        .Include(c => c.ItemsCompra)
+        .ThenInclude(ic => ic.Producto)
+        .FirstOrDefaultAsync(c => c.Id == id);
+
+    if (compra == null)
+        return Results.NotFound("Compra no encontrada");
+
+    return Results.Ok(compra);
+});
+
 app.Run();
 
 // // Agregar servicios CORS para permitir solicitudes desde el cliente
