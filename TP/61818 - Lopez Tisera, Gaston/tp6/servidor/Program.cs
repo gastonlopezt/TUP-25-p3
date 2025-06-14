@@ -99,6 +99,9 @@ app.MapPut("/carritos/{id:guid}/confirmar", async (Guid id, ClienteDto cliente, 
 
     if (!carrito.Items.Any())
         return Results.BadRequest("El carrito está vacío");
+        
+    if (string.IsNullOrWhiteSpace(cliente.Email) || !cliente.Email.Contains("@"))
+        return Results.BadRequest("Email inválido");
 
     var compra = new Compra
     {
