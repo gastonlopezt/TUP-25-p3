@@ -44,6 +44,37 @@ app.MapDelete("/carritos/{id:guid}", (Guid id) =>
     return Results.NotFound();
 });
 
+app.MapPut("/carritos/{id:guid}/{productoId:int}", async (Guid id, int productoId, TiendaDbContext db) =>
+{
+    if (!carritos.TryGetValue(id, out var carrito))
+        return Results.NotFound("Carrito no encontrado");
+
+    var producto = await db.Productos.FindAsync(productoId);
+    if (producto == null || producto.Stock <= 0)
+        return Results.BadRequest("Producto no disponible");
+
+    var item = carrito.Items.FirstOrDefault(i => i.ProductoId == productoId);
+    if (item != null)
+    {
+        if (producto.Stock <= item.Cantidad)
+            return Results.BadRequest("No hay stock disponible para aumentar la cantidad");
+
+        item.Cantidad++;
+    }
+    else
+    {
+        carrito.Items.Add(new ItemCarrito
+        {
+            ProductoId = producto.Id,
+            Nombre = producto.Nombre,
+            Cantidad = 1,
+            PrecioUnitario = producto.Precio
+        });
+    }
+
+    return Results.Ok(carrito);
+});
+
 app.Run();
 
 // // Agregar servicios CORS para permitir solicitudes desde el cliente
