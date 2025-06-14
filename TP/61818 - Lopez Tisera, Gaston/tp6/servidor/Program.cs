@@ -75,6 +75,22 @@ app.MapPut("/carritos/{id:guid}/{productoId:int}", async (Guid id, int productoI
     return Results.Ok(carrito);
 });
 
+app.MapDelete("/carritos/{id:guid}/{productoId:int}", (Guid id, int productoId) =>
+{
+    if (!carritos.TryGetValue(id, out var carrito))
+        return Results.NotFound("Carrito no encontrado");
+
+    var item = carrito.Items.FirstOrDefault(i => i.ProductoId == productoId);
+    if (item == null)
+        return Results.NotFound("Producto no encontrado en carrito");
+
+    item.Cantidad--;
+    if (item.Cantidad <= 0)
+        carrito.Items.Remove(item);
+
+    return Results.Ok(carrito);
+});
+
 app.Run();
 
 // // Agregar servicios CORS para permitir solicitudes desde el cliente
