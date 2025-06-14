@@ -1,6 +1,9 @@
+@page "/carrito"
 @using Cliente.Services
 @using Cliente.Modelos
+@using System.ComponentModel.DataAnnotations
 @inject CarritoService CarritoService
+@inject HttpClient Http
 
 <h3>Carrito</h3>
 
@@ -33,15 +36,86 @@ else
     </table>
 
     <p><strong>Total:</strong> @total</p>
+
+     <h4>Confirmar compra</h4>
+    <EditForm Model="compra" OnValidSubmit="ConfirmarCompra">
+    <InputText @bind-Value="compra.Nombre" placeholder="Nombre" />
+    <InputText @bind-Value="compra.Apellido" placeholder="Apellido" />
+    <InputText @bind-Value="compra.Email" placeholder="Email" />
+    <button type="submit">Confirmar Compra</button>
+</EditForm>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <p>@mensaje</p>
+    }
 }
 
 @code {
     private List<CarritoItem> items = new();
     private decimal total;
+    private DatosCompra compra = new();
+    private string mensaje = "";
+    private string carritoId = "";
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         items = CarritoService.ObtenerItems();
         total = CarritoService.CalcularTotal();
+         var response = await Http.PostAsync("carritos", null);
+        if (response.IsSuccessStatusCode)
+        {
+            carritoId = await response.Content.ReadAsStringAsync();
+
+            // Agregar productos al carrito real
+            foreach (var item in items)
+            {
+                var body = new
+                {
+                    productoId = item.Producto.Id,
+                    cantidad = item.Cantidad
+                };
+
+                await Http.PostAsJsonAsync($"carritos/{carritoId}/productos", body);
+            }
+        }
+    }
+
+    private async Task ConfirmarCompra()
+    {
+        if (string.IsNullOrWhiteSpace(carritoId))
+        {
+            mensaje = "Carrito no inicializado.";
+            return;
+        }
+
+        var response = await Http.PutAsJsonAsync($"carritos/{carritoId}/confirmar", compra);
+
+        if (response.IsSuccessStatusCode)
+        {
+            mensaje = "✅ Compra confirmada con éxito.";
+        }
+        else
+        {
+            mensaje = "❌ Error al confirmar la compra.";
+        }
+    }
+
+    public class FormularioCompra
+    {
+        [Required]
+        public string Nombre { get; set; } = "";
+
+        [Required]
+        public string Apellido { get; set; } = "";
+
+        [Required, EmailAddress]
+        public string Email { get; set; } = "";
+    }
+    public class DatosCompra
+    {
+        public string Nombre { get; set; } = "";
+        public string Apellido { get; set; } = "";
+        public string Email { get; set; } = "";
     }
 }

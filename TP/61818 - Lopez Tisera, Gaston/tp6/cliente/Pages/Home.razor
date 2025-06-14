@@ -1,6 +1,7 @@
 ﻿@using Cliente.Services
 @using Cliente.Modelos
 @page "/"
+@inject CarritoService CarritoService
 @inject ApiService ApiService
 
 <h3>Lista de Productos</h3>
@@ -9,10 +10,10 @@
 {
     <p>Cargando productos...</p>
 }
-else if (productos.Count == 0)
+@* else if (productos.Count == 0)
 {
     <p>No se encontraron productos.</p>
-}
+} *@
 else
 {
     <div class="productos">
@@ -23,6 +24,8 @@ else
                 <p>@producto.Descripcion</p>
                 <p><strong>$@producto.Precio</strong></p>
                 <p>Stock: @producto.Stock</p>
+                @* <button @onclick="() => AgregarAlCarrito(producto)">Agregar al carrito</button> *@
+                <button @onclick="@(() => AgregarAlCarrito(producto))">Agregar al carrito</button>
             </div>
         }
     </div>
@@ -33,5 +36,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         productos = await ApiService.ObtenerProductosAsync();
+    }
+    private void AgregarAlCarrito(Producto producto)
+    {
+        CarritoService.AgregarProducto(producto);
     }
 }
