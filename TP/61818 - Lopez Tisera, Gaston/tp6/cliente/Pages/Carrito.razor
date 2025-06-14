@@ -1,0 +1,46 @@
+@inject Services.CarritoService CarritoService
+@using Carrito.Modelos
+
+<h3>Carrito</h3>
+
+@if (items.Count == 0)
+{
+    <p>Tu carrito está vacío.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Producto.Nombre</td>
+                    <td>@item.Producto.Precio</td>
+                    <td>@item.Cantidad</td>
+                    <td>@(item.Producto.Precio * item.Cantidad)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Total:</strong> @total</p>
+}
+
+@code {
+    private List<CarritoItem> items = new();
+    private decimal total;
+
+    protected override void OnInitialized()
+    {
+        items = CarritoService.ObtenerItems();
+        total = CarritoService.CalcularTotal();
+    }
+}
