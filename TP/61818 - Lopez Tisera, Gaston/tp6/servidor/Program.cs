@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Servidor.Datos;
 using Servidor.Modelos;
 using Tienda.Modelos;
+using Cliente.Modelos;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TiendaDbContext>(options =>
@@ -89,6 +90,46 @@ app.MapDelete("/carritos/{id:guid}/{productoId:int}", (Guid id, int productoId) 
         carrito.Items.Remove(item);
 
     return Results.Ok(carrito);
+});
+
+app.MapPut("/carritos/{id:guid}/confirmar", async (Guid id, ClienteDto cliente, TiendaDbContext db) =>
+{
+    if (!carritos.TryGetValue(id, out var carrito))
+        return Results.NotFound("Carrito no encontrado");
+
+    if (!carrito.Items.Any())
+        return Results.BadRequest("El carrito está vacío");
+
+    var compra = new Compra
+    {
+        Fecha = DateTime.UtcNow,
+        NombreCliente = cliente.Nombre,
+        ApellidoCliente = cliente.Apellido,
+        EmailCliente = cliente.Email,
+        Total = carrito.Items.Sum(i => i.PrecioUnitario * i.Cantidad)
+    };
+
+    foreach (var item in carrito.Items)
+    {
+        var producto = await db.Productos.FindAsync(item.ProductoId);
+        if (producto == null || producto.Stock < item.Cantidad)
+            return Results.BadRequest($"Stock insuficiente para {item.Nombre}");
+
+        producto.Stock -= item.Cantidad;
+
+        compra.ItemsCompra.Add(new ItemCompra
+        {
+            ProductoId = producto.Id,
+            Cantidad = item.Cantidad,
+            PrecioUnitario = item.PrecioUnitario
+        });
+    }
+
+    db.Compras.Add(compra);
+    await db.SaveChangesAsync();
+    carritos.Remove(id);
+
+    return Results.Ok("Compra confirmada");
 });
 
 app.Run();
