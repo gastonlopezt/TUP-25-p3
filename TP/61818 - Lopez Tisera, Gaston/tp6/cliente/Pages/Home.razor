@@ -1,59 +1,37 @@
-﻿@page "/"
-@using cliente.Services
+﻿@using Cliente.Services
+@using Cliente.Modelos
+@page "/"
 @inject ApiService ApiService
 
-<PageTitle>Inicio</PageTitle>
+<h3>Lista de Productos</h3>
 
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1>Comunicación Cliente-Servidor</h1>
-        </div>
-    </div>
-    
-    <div class="row mb-4">
-        <div class="col-12">
-            <button class="btn btn-primary" @onclick="ObtenerDatosDelServidor">Obtener datos del servidor</button>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">            
-            @if (cargando) {
-                <div class="alert alert-info">Cargando datos...</div>
-            } else if (datos != null) {                <div class="card" style="width: 300px;">
-                    <div class="card-header">
-                        Respuesta del servidor
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">@datos.Mensaje</h5>
-                        <p class="card-text">Fecha: @datos.Fecha.ToString("dd/MM/yyyy HH:mm:ss")</p>
-                    </div>
-                </div>
-            } else if (error != null) {
-                <div class="alert alert-danger">
-                    Error: @error
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-@code {
-    private DatosRespuesta datos;
-    private string error;
-    private bool cargando = false;
-
-    private async Task ObtenerDatosDelServidor() {
-        try {
-            cargando = true;
-            error = null;
-            datos = await ApiService.ObtenerDatosAsync();
-        } catch (Exception ex) {
-            error = ex.Message;
-            datos = null;
-        } finally {
-            cargando = false;
+@if (productos is null)
+{
+    <p>Cargando productos...</p>
+}
+else if (productos.Count == 0)
+{
+    <p>No se encontraron productos.</p>
+}
+else
+{
+    <div class="productos">
+        @foreach (var producto in productos)
+        {
+            <div class="producto">
+                <h4>@producto.Nombre</h4>
+                <p>@producto.Descripcion</p>
+                <p><strong>$@producto.Precio</strong></p>
+                <p>Stock: @producto.Stock</p>
+            </div>
         }
+    </div>
+}
+@code {
+    List<Producto>? productos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await ApiService.ObtenerProductosAsync();
     }
 }

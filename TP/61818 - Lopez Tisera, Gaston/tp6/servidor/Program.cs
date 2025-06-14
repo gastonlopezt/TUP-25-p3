@@ -8,7 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TiendaDbContext>(options =>
     options.UseSqlite("Data Source=tienda.db"));
 
+// Agregar servicios CORS para permitir solicitudes desde el cliente
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:5184",
+            "https://localhost:7221",
+            "http://localhost:5177"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 var app = builder.Build();
+app.UseCors();
 // var testCarrito = new Tienda.Modelos.Carrito();
 var carritos = new Dictionary<Guid, Carrito>();
 
@@ -158,13 +173,5 @@ app.MapGet("/compras/{id:int}", async (int id, TiendaDbContext db) =>
     return Results.Ok(compra);
 });
 
-app.Run();
 
-// // Agregar servicios CORS para permitir solicitudes desde el cliente
-// builder.Services.AddCors(options => {
-//     options.AddPolicy("AllowClientApp", policy => {
-//         policy.WithOrigins("http://localhost:5177", "https://localhost:7221")
-//               .AllowAnyHeader()
-//               .AllowAnyMethod();
-//     });
-// });
+app.Run();
