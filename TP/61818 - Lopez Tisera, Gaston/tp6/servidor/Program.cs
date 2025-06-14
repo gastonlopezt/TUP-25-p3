@@ -132,6 +132,16 @@ app.MapPut("/carritos/{id:guid}/confirmar", async (Guid id, ClienteDto cliente, 
     return Results.Ok("Compra confirmada");
 });
 
+app.MapGet("/compras", async (TiendaDbContext db) =>
+{
+    var compras = await db.Compras
+        .Include(c => c.ItemsCompra)
+        .ThenInclude(ic => ic.Producto)
+        .ToListAsync();
+
+    return Results.Ok(compras);
+});
+
 app.Run();
 
 // // Agregar servicios CORS para permitir solicitudes desde el cliente
