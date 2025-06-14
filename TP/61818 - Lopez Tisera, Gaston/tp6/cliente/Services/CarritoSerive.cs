@@ -1,6 +1,6 @@
-using Carrito.Modelos;
+using Cliente.Modelos;
 
-namespace Carrito.Services
+namespace Cliente.Services
 {
     public class CarritoService
     {

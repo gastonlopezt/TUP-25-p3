@@ -1,4 +1,6 @@
-namespace Carrito.Modelos
+using Cliente.Modelos;
+
+namespace Cliente.Modelos
 {
     public class CarritoItem
     {
