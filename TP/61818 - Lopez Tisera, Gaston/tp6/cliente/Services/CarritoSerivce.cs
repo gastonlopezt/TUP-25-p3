@@ -18,8 +18,8 @@ namespace Cliente.Services
                 _items.Add(new CarritoItem { Producto = producto, Cantidad = 1 });
             }
         }
-
         public List<CarritoItem> ObtenerItems() => _items;
+        public void Limpiar() => _items.Clear();
 
         public decimal CalcularTotal() => _items.Sum(i => i.Producto.Precio * i.Cantidad);
     }

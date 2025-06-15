@@ -4,32 +4,44 @@
 @inject CarritoService CarritoService
 @inject ApiService ApiService
 
-<h3>Lista de Productos</h3>
+<div class="home-container">
+    <div style="width:100%;">
+        <h2 class="text-center mb-4" style="font-size:2.5rem;font-weight:700;color:#0d6efd;">
+            <i class="bi bi-shop"></i> Lista de Productos
+        </h2>
 
-@if (productos is null)
-{
-    <p>Cargando productos...</p>
-}
-@* else if (productos.Count == 0)
-{
-    <p>No se encontraron productos.</p>
-} *@
-else
-{
-    <div class="productos">
-        @foreach (var producto in productos)
+        @if (productos is null)
         {
-            <div class="producto">
-                <h4>@producto.Nombre</h4>
-                <p>@producto.Descripcion</p>
-                <p><strong>$@producto.Precio</strong></p>
-                <p>Stock: @producto.Stock</p>
-                @* <button @onclick="() => AgregarAlCarrito(producto)">Agregar al carrito</button> *@
-                <button @onclick="@(() => AgregarAlCarrito(producto))">Agregar al carrito</button>
+            <div class="text-center mt-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <div class="mt-3" style="font-size:1.3rem;">Cargando productos...</div>
+            </div>
+        }
+        else if (productos.Count == 0)
+        {
+            <div class="alert alert-warning text-center mt-5" style="font-size:1.2rem;">
+                <i class="bi bi-emoji-frown"></i> No se encontraron productos.
+            </div>
+        }
+        else
+        {
+            <div class="productos-grid">
+                @foreach (var producto in productos)
+                {
+                    <div class="producto-card">
+                        <div class="producto-nombre">@producto.Nombre</div>
+                        <div class="producto-descripcion">@producto.Descripcion</div>
+                        <div class="producto-precio">$@producto.Precio</div>
+                        <div class="producto-stock">Stock: @producto.Stock</div>
+                        <button class="agregar-btn mt-auto" @onclick="@(() => AgregarAlCarrito(producto))">
+                            <i class="bi bi-cart-plus"></i> Agregar al carrito
+                        </button>
+                    </div>
+                }
             </div>
         }
     </div>
-}
+</div>
 @code {
     List<Producto>? productos;
 
